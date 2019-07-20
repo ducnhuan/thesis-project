@@ -1,0 +1,21 @@
+<%layout('./partials/layout')%>
+<body class="bg-white">
+    <div class="dashboard">
+        <aside>
+            <nav>
+                <figure>
+                    <div id="avatar"><p><i class="fas fa-info-circle fa-3x"></i></p></div>
+                    <figcaption>motor</figcaption>  
+                </figure>
+                <ul class="menu">
+                    <li><a href="/admin"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+                    <li><a href="/forum"><i class="fas fa-file-medical-alt"></i>Forum</a></li>
+                    <li><a href="/admin/report"><i class="fab fa-wpforms"></i>Report</a></li>
+                    <li><a href="/admin/category"><i class="fas fa-motorcycle"></i>Category</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Log out</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main style="padding: 0 3em;">
+            <%-body%>
+    

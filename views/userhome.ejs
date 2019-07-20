@@ -1,0 +1,67 @@
+<%layout('./partials/homeLayout')%>
+<div class="carousel slide" id="myCarousel" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+    </ol>
+<!-- <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+        <h1 class="display-4">Biker paradise</h1>
+        <p class="lead">Explore the lastest news about motorbike</p>
+        <a class="btn btn-outline-secondary" href="/forum">Getting started</a>
+    </div>
+</div> -->
+<main>
+    <div class="jumbotron bg-menu m-md-3" style="padding: 5rem 3rem 1rem;">
+        <h1 class="display-4">My Order</h1>
+    </div>
+    <div class="row overflow-hidden" style="padding: 0 5rem;">
+        <div class="col col-8">
+            <input type="text" v-model="seachbar" placeholder="Search ..." class="form-control">
+        </div>
+        <div class="col col-2">
+            <a class="btn btn-block btn-white" role="button" onclick="filterToggle();">Sort</a>   
+        </div>
+        <div class="col col-2">
+            <a href="/forum/newforum" class="btn btn-block btn-white"><i class="fas fa-plus"></i>Add new order</a>   
+        </div>
+    </div>
+
+    <div class="row hidden" style="padding: 2rem 5rem 0;" id="filter">
+        <legend class="col-form-label col-sm-2 pt-0">Sort by:</legend>
+        <div class="col-sm-5">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" v-model="filterType" value="name" id="1sttype" checked> 
+                <label class="form-check-label" for="1sttype">Name</label> 
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" v-model="filterType" value="lastPost" id="2ndtype"> 
+                <label class="form-check-label" for="2ndtype">Created Date</label> 
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" style="padding: 2rem 3rem 1rem;" id='vue-forum'>
+        <table class="table table-hover table-bottom-border">
+            <thead>
+                <tr>
+                    <th scope="col">Order Number</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in filteredtableData">
+                    <td><a v-bind:href="'/forum/thread?id='+row.id+'?name='+row.forumName">{{row.forumName}}</a></td>
+                    <td>{{row.lastPost}}</td>
+                    <td>{{row.thread}}</td>
+                    <td>{{row.post}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<script src="/js/components/forumControl.js"></script>
+

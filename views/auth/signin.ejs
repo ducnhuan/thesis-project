@@ -1,0 +1,16 @@
+<%layout('./partials/layout')%>
+<body class="bg-menu text-center">
+    <div class="form-signin" id="vue-signin">
+        <h1 class="brand">Login</h1>
+        <input type="text" placeholder="Email" name="usr" class="form-control" v-model="email"required autofocus>
+        <label class="sr-only" for="pwd">Password</label>
+        <input type="password" placeholder="Password" name="pwd" class="form-control" v-model="password" required autofocus>
+        <button class="btn btn-lg btn-block btn-white" @click="submitsignin">Sign in</button>
+        <p class="mt-2">
+            <a href="/auth/signin/google" class="btn btn-lg btn-white" style="width: 100%;"><i class="fab fa-google"></i></a>
+            <a href="/resetPassword" class="btn btn-link">Forgot Password</a> 
+        </p>
+        <p>Not register yet? <a href="/signup">click me!</a></p>
+        <p class="mt-5 mb-3 text-muted">©VGU 2019</p>
+    </div>
+    <script src="/javascripts/components/signinControl.js"></script>
