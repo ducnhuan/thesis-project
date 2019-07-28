@@ -6,6 +6,7 @@ var logger = require('morgan');
 const ejsmate = require('ejs-mate');
 const passport = require('passport');
 const session = require('express-session');
+const service = require('./routes/service')
 require('./passport/passport')(passport); 
 
 var indexRouter = require('./routes/index');
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth',authRouter);
+app.use('/service',service);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
