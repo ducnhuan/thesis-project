@@ -17,24 +17,29 @@ class orderService
             serverUrl:conf.loginUrl,
             accessToken:token
         })
-        //console.log(accessToken);
         var options ={headers:{'Id':id}};
-        return new Promise(function(resolve,reject)
-        {
-            conn.apex.get('/Order',options,function(err,result)
-            {
-                if(err){
-                    if(err=='INVALID_SESSION_ID: Session expired or invalid')
-                    {
-                        console.log('Error1');
-                        authenticate.data.salesforcelogin();
-                        reject('INVALID_SESSION_ID: Session expired or invalid. Please reload page!!')
-                    }
-                    else{reject(err);}
-                }
-                else{resolve(result);}
-            })
-        })
+        //console.log(accessToken);
+         return new Promise(function(resolve,reject)
+          {
+              conn.apex.get('/Order',options,function(err,result)
+              {
+                  if(err){
+                      if(err=='INVALID_SESSION_ID: Session expired or invalid')
+                      {
+                          console.log('Error1');
+                          authenticate.data.salesforcelogin();
+                          reject(err);
+                      }
+                      else{reject(err);}
+                  }
+                  else{resolve(result);}
+              })
+          })
+        //,function(err,res)
+        // {
+        //     if(err){return err;}
+        //     return res;
+        // });
         // var conn= new jsforce.Connection(
         //     {
         //         serverUrl:'https://ap15.lightning.force.com',
