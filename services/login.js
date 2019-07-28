@@ -12,10 +12,8 @@ var methods={
         conn.login(conf.userName,conf.password,function(err,userInfo)
         {
             if(err){return console.log(err)}
-            console.log(conn);
-            console.log(userInfo);
-            //var myValue={accessToken:conn.accessToken};
-            //localStorage.setItem('token',JSON.stringify(myValue));
+            var myValue={accessToken:conn.accessToken};
+            localStorage.setItem('token',JSON.stringify(myValue));
         })
     }
 };
