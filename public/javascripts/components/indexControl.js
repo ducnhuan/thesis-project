@@ -8,7 +8,7 @@ var formControl = new Vue({
         subtmitId:function()
         {
             console.log(this.Id);
-            window.location.href='/orderDetail'+this.Id;
+            window.location.href='/Order/orderDetail?id='+this.Id;
             // this.$http.get('/service/api/order/getDetail/'+this.Id)
             // .then(response=>
             //     {
