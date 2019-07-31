@@ -3,9 +3,8 @@ var formControl = new Vue({
     el: "#vue-search",
     data: {
         Id:'',
-        progress:0,
         orderData:[],
-        state:["Draft","Confirm","Activated","Delivering","End"]
+        state:["Draft","Activated","Delivering","Completed"]
     },
     watch:{},
     created(){
@@ -18,17 +17,20 @@ var formControl = new Vue({
              this.$http.get('/service/api/order/getDetail/'+postID)
              .then(response=>
                  {
-                     var result=response.body.data;
-                     var input = {
-                        Id: result.Id,
-                        Status: result.Status,
-                        EffectiveDate:result.EffectiveDate,
-                        Total: result.TotalAmount,
-                        OrderItems:result.OrderItems
-                    };
-                    this.orderData.push(input);
-                    //console.log(result.Status);
-                    this.progress=20+this.state.indexOf(result.Status)*20;
+                     response.body.data.forEach(result=>
+                        {
+                            console.log(result);
+                            var input = {
+                                Id: result.Id,
+                                Status: result.Status,
+                                EffectiveDate:result.EffectiveDate,
+                                Total: result.TotalAmount,
+                                OrderItems:result.OrderItems,
+                                Progress: 25+this.state.indexOf(result.Status)*25
+                            };
+                            this.orderData.push(input);
+                            //console.log(result.Status);
+                        });
                  },response=>{
                      console.log('2');
                      var patt= new RegExp("System.QueryException: List has no rows for assignment to SObject");

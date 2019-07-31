@@ -5,6 +5,10 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/test',function(req,res,next){
+  console.log(req);
+  res.send(req);
+})
 var authenticated = function (req, res, next) {
   if (req.isAuthenticated()) {
     next()

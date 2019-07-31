@@ -52,26 +52,24 @@ module.exports = function (passport) {
                 }) 
         }))
 
-    // passport.use(new googleStrategy({
-    //     clientID: "782253470032-29nmibjot6u91u4dmaa64urck3npvuv5.apps.googleusercontent.com" ,
-    //     clientSecret:"XGTQMUz1N53_nKDLvtIDrNV0",
-    //     callbackURL: "https://motor-forum.herokuapp.com/auth/signin/google/return"
-    //   },
-    //   function(accessToken, refreshToken, profile, done) {
-    //       console.log(profile.id, profile.displayName, profile.emails[0].value)
-    //        //User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    //          //return done(null,profile);
-    //          key = 'googletoken';
-    //          return done(null,
-    //             {token : jwt.sign({
-    //                 username:profile.displayName,
-    //                  googleID:profile.id,
-    //                  email:profile.emails[0].value}
-    //                  ,key,
-    //                  {expiresIn: '15m'}) 
-    //        });
-    //        //});
-    //   }
-    // ));
+    passport.use(new googleStrategy({
+         clientID: "653795520223-qtapkn9auha7i0p0toa3i51ehl3g5qas.apps.googleusercontent.com" ,
+         clientSecret:"DUQ9HXA05FEQSqT8zxx0SMjY",
+         callbackURL: "https://salesforce-payment.herokuapp.com/auth/signin/google/return"
+       },
+       function(accessToken, refreshToken, profile, done) {
+           console.log(profile.name);
+           console.log(profile.id, profile.displayName, profile.emails[0].value)
+            //User.findOrCreate({ googleId: profile.id }, function (err, user) {
+              //return done(null,profile);
+              key = 'googletoken';
+              return done(null,
+                {
+                    lname:profile.name.familyName,
+                    fname:profile.name.givenName,
+                    email:profile.emails[0].value});
+            //});
+       }
+     ));
 
 }

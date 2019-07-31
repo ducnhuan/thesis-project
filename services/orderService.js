@@ -6,6 +6,7 @@ class orderService
 {
     static getDetail(id)
     {
+        console.log(id);
         var myValue=JSON.parse(localStorage.getItem('token'));
         var token;
         if(myValue==null)
@@ -17,11 +18,11 @@ class orderService
             serverUrl:conf.loginUrl,
             accessToken:token
         })
-        var options ={headers:{'Id':id}};
+        var body ={"ID":id};
         //console.log(accessToken);
          return new Promise(function(resolve,reject)
           {
-              conn.apex.get('/Order',options,function(err,result)
+              conn.apex.post('/Order',body,function(err,result)
               {
                   if(err){
                       if(err=='INVALID_SESSION_ID: Session expired or invalid')

@@ -48,6 +48,54 @@ module.exports = function(passport)
         console.log(req.user)
         res.send(req.user);
     });
+    router.get('/signin/google',
+    passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile'
+    ] }));
+
+    router.get('/signin/google/return', 
+    passport.authenticate('google', { failureRedirect: '/signin' }),
+    function(req, res) {
+        res.redirect('/auth/google');
+    });
+    router.get('/google',function(req,res)
+    {
+        console.log(req.session);
+        var user= req.session.passport.user;
+        User.findOne({email:user.email},function(err,doc)
+        {
+            if(err){throw err;}
+            else
+            {
+                if(doc)
+                {
+                    res.redirect('/home');
+                }
+                else
+                {
+                    var record = new User()
+                    record.lname=user.lname;
+                    record.fname=user.fname;
+                    record.email=user.email;
+                    record.save(function(err,user)
+                    {
+                        if(err){throw err;}
+                        else
+                        {
+                            User.findOne({email:record.email},function(err,doc)
+                            {
+                                if(err){res.status(500).send(err);}
+                                else
+                                {
+                                    res.redirect('/home')
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    })
     
 
   return router;

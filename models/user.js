@@ -32,10 +32,6 @@ const userSchema = new schema({
       'mod',
       'user',
     ],
-  },
-  loginGoogle:{
-    type:String,
-    default:''
   }
 });
 userSchema.methods.hashPassword = function(password){
