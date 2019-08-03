@@ -14,19 +14,23 @@ var formControl = new Vue({
         searchOrder:function()
         {
             console.log(postID);
+            var temp=['8012v000001PcWVAA0','8012v000001PdSrAAK'];
              this.$http.get('/service/api/order/getDetail/'+postID)
              .then(response=>
                  {
+                     console.log(response);
                      response.body.data.forEach(result=>
                         {
                             console.log(result);
+                            console.log(result.OrderItems.records[0].UnitPrice);
                             var input = {
                                 Id: result.Id,
                                 Status: result.Status,
                                 EffectiveDate:result.EffectiveDate,
                                 Total: result.TotalAmount,
                                 OrderItems:result.OrderItems,
-                                Progress: 25+this.state.indexOf(result.Status)*25
+                                Progress: 25+this.state.indexOf(result.Status)*25,
+                                orderProducts: result.OrderItems.records
                             };
                             this.orderData.push(input);
                             //console.log(result.Status);
@@ -43,6 +47,21 @@ var formControl = new Vue({
                  })
 
 
+        },
+        addOrder:function(id)
+        {
+            console.log(id);
+            this.$http.post('/test',{id:id})
+            .then(function(res)
+            {
+                console.log(res);
+            })
+            .catch(function(err)
+            {
+                console.log(err);
+            })
         }
+
+
     }
 });

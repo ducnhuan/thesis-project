@@ -10,11 +10,12 @@ var formContro2 = new Vue({
             this.$http.post('/auth/login',{ email: this.email, pwd:this.password})
             .then(function(res){
                 //Success
-              if(res.data.rule=="admin"){
-                window.location.href='/admin'}
-                else{
-                window.location.href='/home'
-                }
+                window.history.back();
+            //   if(res.data.rule=="admin"){
+            //     window.location.href='/admin'}
+            //     else{
+            //     window.location.href='/home'
+            //     }
             })
             .catch(function(res){
                 //Error

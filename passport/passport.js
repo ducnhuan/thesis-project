@@ -4,6 +4,7 @@ var googleStrategy = require('passport-google-oauth').OAuth2Strategy;
 //const passportJWT = require("passport-jwt");
 //const ExtractJWT = passportJWT.ExtractJwt;
 var jwt =require('jsonwebtoken');
+const conf = require('../config/salesforce') 
 
 
 
@@ -34,7 +35,8 @@ module.exports = function (passport) {
                            if(valid)
                            {
                                console.log('log in success');
-                               var key = 'secrettoken';
+                               console.log('KEY:'+conf.secretkey);
+                               var key = conf.secretkey;
                                done(null,
                                 {
                                     lname:doc.lname,
