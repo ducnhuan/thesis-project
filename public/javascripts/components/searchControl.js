@@ -14,8 +14,7 @@ var formControl = new Vue({
         searchOrder:function()
         {
             console.log(postID);
-            var temp=['8012v000001PcWVAA0','8012v000001PdSrAAK'];
-             this.$http.get('/service/api/order/getDetail/'+postID)
+            this.$http.get('/service/api/order/getDetail/'+postID)
              .then(response=>
                  {
                      console.log(response);
@@ -51,14 +50,17 @@ var formControl = new Vue({
         addOrder:function(id)
         {
             console.log(id);
-            this.$http.post('/test',{id:id})
+            this.$http.post('/Order/addOrder',{id:id})
             .then(function(res)
             {
                 console.log(res);
+                alert(res.body);
+                window.location.href='/home' 
             })
             .catch(function(err)
             {
                 console.log(err);
+                alert(err.body);
             })
         }
 
