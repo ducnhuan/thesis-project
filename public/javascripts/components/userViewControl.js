@@ -9,7 +9,8 @@ var table = new Vue({
         orderData:[],
         orderId:'',
         state:["Draft","Activated","Delivering","Completed"],
-        ids:[]
+        ids:[],
+        element:'',
     },
     created(){
         this.loadListId()
@@ -65,6 +66,46 @@ var table = new Vue({
         searchOrder:function(){
             console.log(this.orderId);
             window.location.href='/Order/orderDetail?id='+this.orderId
+        },
+        confirmOrder:function()
+        {
+            console.log(this.element.Id);
+        },
+        activeOrder:function(id)
+        {
+            this.$http.get('/service/api/order/getInfo/'+id)
+            .then(response=>
+                {
+                    var input = {
+                        Id: response.body.data.Id,
+                        Status: response.body.data.Status,
+                        EffectiveDate:response.body.data.EffectiveDate,
+                        Total: response.body.data.TotalAmount
+                    };
+                    this.element=input;
+                    console.log(this.element);
+                    $('#confirmModal').modal('show');
+                },
+            
+            response=>{console.log('ERROR'+response);})
+            
+                //var button = $(event.relatedTarget) // Button that triggered the modal
+                //var recipient = button.data('whatever') // Extract info from data-* attributes
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                //var modal = $(this)
+                //modal.find('.modal-title').text('New message to ' + recipient)
+                //modal.find('.modal-body input').val(recipient)
+              
+            // this.$http.post('/service/api/order/changeState',{Id:id,State:'Activated'})
+            // .then(response=>
+            //     {
+            //         this.orderData=[];
+            //         this.loadOrderData();}
+            //     ,
+            //     response=>{
+            //         alert('Error occured when updating order state.Please contact support.')
+            //     })
         },
         async sendTransaction(){
             console.log('Load')

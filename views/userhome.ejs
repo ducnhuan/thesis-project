@@ -99,7 +99,7 @@
                           </table>
                         </div>
                         <div class="row" style="margin-left: 900px; margin-top: 20px;">
-                            <button class="btn btn-primary" style="margin-right:40px" type="button" @click="sendTransaction">Activate</button>
+                            <button class="btn btn-primary" style="margin-right:40px" type="button" v-on:click="activeOrder(element.Id)">Activate</button>
                             <button class="btn btn-danger" style="margin-right:40px" type="button">Cancel</button>
                             <button class="btn btn-success" style="margin-right:40px" type="button">Complete</button>
                         </div>
@@ -107,6 +107,30 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Payment Confirmation </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div>
+                      <p>Do you agree payment for the order as following?</p>
+                      <p class="font-weight-bold">Order Id: {{element.Id}}</p>
+                      <p>Status: {{element.Status}}</p>
+                      <p class="font-weight-bold">Ammount: {{element.Total}} Ether</p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" @click="confirmOrder">Confirm</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!--<div class="row hidden" style="padding: 2rem 5rem 0;" id="filter">

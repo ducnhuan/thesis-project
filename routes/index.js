@@ -3,15 +3,13 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 const conf = require('../config/salesforce') 
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
-router.post('/test',function(req,res,next){
-  console.log('KEY:'+conf.secretkey);
-  console.log(req.session.passport.user.token);
-  console.log(jwt.verify(req.session.passport.user.token,conf.secretkey));
-  console.log(req.body);
+router.get('/test',function(req,res,next){
+
 })
 var authenticated = function (req, res, next) {
   if (req.isAuthenticated()) {
