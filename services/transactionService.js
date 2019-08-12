@@ -10,5 +10,13 @@ class transactionService
     {
         return Order.find({userId:id}).exec();
     }
+    static updateTotal(id,total)
+    {
+        return Order.updateOne({orderId:id},{Total: total}).exec();
+    }
+    static updateAddress(id,address)
+    {
+        return Order.updateOne({orderId:id},{contractAddress: address}).exec();
+    }
 }
 module.exports = transactionService;

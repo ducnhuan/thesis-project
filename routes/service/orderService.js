@@ -3,6 +3,8 @@ const router = express.Router();
 const orderService =require('../../services/orderService');
 const utils = require('../../ultis/ultis');
 const request = require('request');
+var transactionService = require('../../services/transactionService')
+var contractService = require('../../services/contracService');
 router.get('/api/order/getDetail/:id',function(req,res)
 {
     var ids=[];
@@ -49,6 +51,7 @@ router.get('/api/order/getInfo/:id',function(req,res)
         {
             var bodyJSON = JSON.parse(body);
             result.TotalAmount= parseFloat((result.TotalAmount*bodyJSON.ticker.price/1000).toFixed(5));
+            transactionService.updateTotal(ids,result.TotalAmount);
             res.json(utils.succeed(result));
         })
     })
@@ -73,5 +76,19 @@ router.post('/api/order/changeState',function(req,res)
       .catch((err)=>{
           console.log('ERROR'+err);
           return res.status(500).json(utils.fail(err,err.message));})
+})
+router.post('/api/order/ConfirmOrder',function(req,res)
+{
+    console.log(req.body);
+    contractService.deployContract('0x2c1a7F35539E19285ae61D9388E4fd0d77836c1b',5000000000000000000,10)
+    .then((result)=>{
+        console.log('Result'+result);
+        transactionService.updateAddress(req.body.Id,result);
+        res.json(utils.succeed(result));
+    })
+    .catch((err)=>{
+        console.log('Error return'+err);
+        return res.status(500).json(utils.fail(err,err.message));
+    })
 })
 module.exports=router;

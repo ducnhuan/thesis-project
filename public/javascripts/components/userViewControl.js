@@ -70,6 +70,15 @@ var table = new Vue({
         confirmOrder:function()
         {
             console.log(this.element.Id);
+            this.$http.post('/service/api/order/ConfirmOrder',{Id:this.element.Id})
+            .then(response=>
+                {
+                    console.log(response.body.data+this.element.Total);
+                   // this.sendTransaction(response.body.data,this.element.Total);
+                },response=>
+                {
+                    console.log(response);
+                });
         },
         activeOrder:function(id)
         {
@@ -121,11 +130,12 @@ var table = new Vue({
                         console.log(txCount);
                         web3.eth.sendTransaction({
                             from:web3.eth.defaultAccount,
-                            to: '0xE0cb3318D18be98b9ac0f24a64BCAC4E7c22BA4c',
-                            value: '1000000000000000000',
-                            gas: 2000000,
+                            to: '0xc59141562535591f236D8D52a9fB34F597e2a353',
+                            value:5000000000000000000,
+                            gas: 100000,
+                            gasPrice:20000000000,
                             nonce: txCount,
-                            chainId: 3
+                            chainId: 4777
                         },function(error,hash){
                             if(error){console.log(error);}
                             else{console.log(hash);}

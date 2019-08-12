@@ -16,6 +16,11 @@ const transactionSchema = new schema({
     default:''
 
   },
+  Total: {
+    type: Number,
+    default:0
+
+  },
 },
 {
   collection: 'Transaction',
