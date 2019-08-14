@@ -21,6 +21,11 @@ const transactionSchema = new schema({
     default:0
 
   },
+  DeliveryDate: {
+    type: String,
+    default:''
+
+  },
 },
 {
   collection: 'Transaction',

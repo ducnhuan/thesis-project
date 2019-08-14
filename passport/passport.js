@@ -41,10 +41,7 @@ module.exports = function (passport) {
                                 {
                                     lname:doc.lname,
                                     fname:doc.fname,
-                                    token : jwt.sign({
-                                     email: doc.email,
-                                     userID: doc._id,
-                                     },key, {expiresIn: '24h'})
+                                    email: doc.email
                                 }) 
                            }
                            else{done(null,false);}

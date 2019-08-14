@@ -1,15 +1,15 @@
 const Web3 = require('web3')
-const web3 = new Web3('HTTP://127.0.0.1:7545');
 const {abi, evm} = require('./compile');
 var conf = require('../config/ethereum')
+const web3 = new Web3(conf.httpProvider);
 class contractService
 {
-    static deployContract(address,total,penalty)
+    static deployContract(total,percent,date)
     {
         var contract = web3.eth.Contract(abi);
         var contractData = contract.deploy({
             data:'0x'+evm.bytecode.object,
-            arguments: ['0x2c1a7F35539E19285ae61D9388E4fd0d77836c1b',web3.utils.toHex(5000000000000000000),web3.utils.toHex(10)]
+            arguments: [web3.utils.toHex(total),date]
         })
         .encodeABI();
         return new Promise(function(resolve,reject)
@@ -19,19 +19,20 @@ class contractService
                if(err){reject(err);}
                else
                {
-                web3.eth.getTransactionCount(conf.account,'pending',(err,txCount)=>
+                web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
                 {
                     if(err){reject(err);}
                     else
                     {
                         web3.eth.accounts.signTransaction({
-                            from:conf.account,
-                            gas: 1000000,
+                            from:conf.account1,
+                            gas: 1100000,
                             gasPrice:gasPrice,
                             nonce:txCount,
                             data:contractData,
+                            value:web3.utils.toHex(total*percent/100),
                             chainId:3
-                        },conf.privateKey,
+                        },conf.privateKey1,
                         (err,result)=>
                         {
                             if(err){reject(err);}
@@ -54,7 +55,26 @@ class contractService
            }) 
         })
     }
+    static confirmContract(address)
+    {
+        const web3 = new Web3(conf.webSocketProvider);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            MyContract.once('Activate', { // Using an array means OR: e.g. 20 or 23
+                fromBlock: 0
+            }, function(error, event)
+            { 
+                if(error){reject(error);}
+                else
+                {
+                    resolve(event.returnValues);
+                }
+            });
+
+        });
+        
+
+    }
 }
 module.exports=contractService;
-//console.log(abi);
-//console.log(evm);

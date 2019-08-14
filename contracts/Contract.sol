@@ -3,78 +3,100 @@ contract Demo {
     uint256 orderAmount;
     uint256 receiveAmount;
     uint256 penaltyAmount;
+    uint256 public deliveryDate;
     address payable private seller;
+    address payable private customer;
     bool customerViolate;
     bool sellerViolate;
-    address payable private customer;
-    address payable private deployer;
     bytes32 state;
-    constructor(address payable _seller,uint256 _amount,uint256 per) public payable{
-        deployer = msg.sender;
-        seller = _seller;
+    constructor(uint256 _amount,uint256 date) public payable{
+        seller = msg.sender;
+        deliveryDate = date;
         orderAmount = _amount;
-        penaltyAmount = orderAmount * per / 100;
+        penaltyAmount = msg.value;
         customerViolate = false;
         sellerViolate = false;
         state = "Created";
     }
-    event payed(
+    event Activate(
         bool check,
-        uint256 receiveAmount,
         address customer
     );
-    event contractState(
-        bytes32 state
+    event Cancel(
+        bool check,
+        address per
     );
-    modifier onlyDeployer()
-    {
-        require(deployer == msg.sender,"Sender not deployer.");
-        _;
-    }
+    event Complete(
+        bool check
+        );
+    event Report(
+        bool check
+        );
+    event Delivery(
+        bool check
+        );
     modifier onlyCustomer()
     {
         require(customer == msg.sender,"Sender not customer");
         _;
     }
-
+    modifier onlySeller()
+    {
+        require(seller == msg.sender,"Sender not seller");
+        _;
+    }
     function () external payable {
+        require(state != "Activate","Contract have already activated.");
         require(orderAmount==msg.value,"Sender not send enough money");
         customer = msg.sender;
         receiveAmount = msg.value;
-        emit payed(true,receiveAmount,customer);
-        }
-    function getInstructor() public view returns(address,address, address, uint256,uint256, bytes32,bool,bool){
-        return (deployer, seller,customer,orderAmount,penaltyAmount,state,customerViolate,sellerViolate);
+        state = "Activate";
+        emit Activate(true,customer);
+    }
+    function getInstructor() public view returns(address, address, uint256,uint256, bytes32,bool,bool){
+        return (seller,customer,orderAmount,penaltyAmount,state,customerViolate,sellerViolate);
     }
     function cancelContract() public
     {
+        require(state!="Delivery","Order in delivery period");
         if(msg.sender == customer) customerViolate = true;
         if(msg.sender == seller) sellerViolate = true;
         state = "Cancel";
-        emit contractState(state);
+        emit Cancel(true,msg.sender);
     }
-    function reportContract() public onlyCustomer
+    function deliveryContract() public onlySeller
     {
-        sellerViolate = true;
-        state = "Company violate";
-        emit contractState(state);
+        require(state=="Activate","Contract have not activated yet.");
+        state = "Delivery";
+        emit Delivery(true);
     }
-    function complete() public payable onlyDeployer{
+    function reportContract(uint256 todate) public onlyCustomer
+    {
+        require(todate > deliveryDate,"Order not reach the delivery date");
+        require(state!="Delivery","Order is delivered");
+        sellerViolate = true;
+        state = "Report";
+        emit Report(true);
+    }
+    function complete() public payable{
+        require(state != "Created" && state != "Activate", "Can not cancel contract in that periods.");
         if(sellerViolate == true)
         {
-            customer.transfer(receiveAmount);
+            customer.transfer(receiveAmount+penaltyAmount);
         }
         else if(customerViolate == true)
         {
             customer.transfer(receiveAmount-penaltyAmount);
-            seller.transfer(penaltyAmount);
+            seller.transfer(2*penaltyAmount);
         }
         else
         {
-            seller.transfer(orderAmount);
+            seller.transfer(receiveAmount+penaltyAmount);
         }
         receiveAmount = 0;
+        penaltyAmount = 0;
+        orderAmount = 0;
         state = "Complete";
-        emit contractState(state);
+        emit Complete(true);
     }
 }
