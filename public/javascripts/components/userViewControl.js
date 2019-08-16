@@ -36,7 +36,7 @@ var table = new Vue({
             this.$http.post('/service/api/order/getDetail',{ids:this.ids})
             .then(response=>
                 {
-                    console.log(response);
+                    //console.log(response);
                     response.body.data.forEach(result=>
                         {
                             //console.log(result);
@@ -72,8 +72,91 @@ var table = new Vue({
                 {
                     //return response;
                     if(response.body.status=="successful")
-                    {alert("Your order is activated. Please check your inbox for confirm email. Thank you!!")}
+                    {
+                        alert("Your order is activated. Please check your inbox for confirm email. Thank you!!");
+                        this.orderData=[];
+                        this.loadOrderData();
+                    }
                     //this.sendTransaction(response.body.data,this.element.Total);
+                },response=>
+                {
+                    console.log(response);
+                    //return response;
+                });
+        },
+        reportButton:function(Id)
+        {
+            console.log('Report');
+            // console.log(Date.now());
+            // console.log(new Date().getTime());
+            // console.log(new Date("2019-08-16").getTime());
+            // var d= new Date();
+            // d.setTime(new Date("2019-08-16").getTime());
+            // console.log(d.toString());
+            this.$http.post('/service/api/order/ContractInfo',{Id:Id})
+            .then(response=>{
+                console.log(response);
+                this.reportTransaction(response.body.data.ContractAddress,response.body.data.ContractABI,Date.now())
+                .then(()=>{
+                    this.$http.post('/service/api/order/reportContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
+                    .then(response1=>
+                    {
+                        if(response1.body.status=="successful")
+                        {
+                            alert("Your order is cancel. Please check your inbox for confirm email. Thank you!!");
+                            this.orderData=[];
+                            this.loadOrderData();
+                        }
+                    },response1=>
+                    {
+                        console.log("Error"+response1);
+                    })
+                })
+            },response=>{
+                console.log('Error'+response);
+            })
+        },
+        cancelButton:function(Id)
+        {
+            console.log('Cancel');
+            this.$http.post('/service/api/order/ContractInfo',{Id:Id})
+            .then(response=>
+                {
+                    if(response.body.data.ContractAddress!="")
+                    {
+                        this.cancelTransaction(response.body.data.ContractAddress,response.body.data.ContractABI)
+                        .then(()=>{
+                            this.$http.post('/service/api/order/CancelContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
+                            .then(response1=>
+                                {
+                                    if(response1.body.status=="successful")
+                                    {
+                                        alert("Your order is cancel. Please check your inbox for confirm email. Thank you!!");
+                                        this.orderData=[];
+                                        this.loadOrderData();
+                                    }
+                                },response1=>
+                                {
+                                    console.log("Error"+response1);
+                                })
+                        })
+                    }
+                    else 
+                    {
+                        this.$http.post('/service/api/order/CancelContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
+                        .then(response1=>
+                            {
+                                if(response1.body.status=="successful")
+                                {
+                                    alert("Your order is cancel. Please check your inbox for confirm email. Thank you!!");
+                                    this.orderData=[];
+                                    this.loadOrderData();
+                                }
+                            },response1=>
+                            {
+                                console.log("Error"+response1);
+                            })
+                    }
                 },response=>
                 {
                     console.log(response);
@@ -101,7 +184,7 @@ var table = new Vue({
                     console.log(response);
                 });
         },
-        activeOrder:function(id)
+        activeButton:function(id)
         {
             this.$http.get('/service/api/order/getInfo/'+id)
             .then(response=>
@@ -158,6 +241,54 @@ var table = new Vue({
                     });
                 } catch (error) {
                     console.log(error);
+                }
+            }
+            else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            }
+        },
+        async cancelTransaction(contractAddress,abi){
+            console.log('Cancel contract');
+            console.log(contractAddress);
+            console.log(abi);
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    console.log(web3.eth.defaultAccount)
+                    var contract = web3.eth.contract(abi).at(contractAddress); 
+                    contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000 },
+                        (err, res) => { if(err){console.log('Error:'+err);
+                                        console.log(res);}});
+
+                } catch (error) {
+                    console.log('ERRor'+error);
+                }
+            }
+            else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            }
+        },
+        async reportTransaction(contractAddress,abi,timeStamp){
+            console.log('Report contract');
+            console.log(contractAddress);
+            console.log(abi);
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    console.log(web3.eth.defaultAccount)
+                    var contract = web3.eth.contract(abi).at(contractAddress); 
+                    contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gas: 45000 },
+                        (err, res) => { if(err){console.log('Error:'+err);
+                                        console.log(res);}});
+
+                } catch (error) {
+                    console.log('ERRor'+error);
                 }
             }
             else {

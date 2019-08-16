@@ -26,7 +26,7 @@ class contractService
                     {
                         web3.eth.accounts.signTransaction({
                             from:conf.account1,
-                            gas: 1100000,
+                            gas: 1200000,
                             gasPrice:gasPrice,
                             nonce:txCount,
                             data:contractData,
@@ -73,8 +73,47 @@ class contractService
             });
 
         });
-        
-
     }
+    static cancelContract(address)
+    {
+        console.log(address);
+        const web3 = new Web3(conf.webSocketProvider);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            MyContract.once('Cancel', { // Using an array means OR: e.g. 20 or 23
+                fromBlock: 0
+            }, function(error, event)
+            { 
+                if(error){reject(error);}
+                else
+                {
+                    //console.log(event);
+                    resolve(event.returnValues);
+                }
+            });
+        });
+    }
+    static ReportContract(address)
+    {
+        console.log(address);
+        const web3 = new Web3(conf.webSocketProvider);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            MyContract.once('Report', { // Using an array means OR: e.g. 20 or 23
+                fromBlock: 0
+            }, function(error, event)
+            { 
+                if(error){reject(error);}
+                else
+                {
+                    //console.log(event);
+                    resolve(event.returnValues);
+                }
+            });
+        });
+    }
+
 }
 module.exports=contractService;

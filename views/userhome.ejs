@@ -103,10 +103,10 @@
                           </table>
                         </div>
                         <div class="row" style="margin-left: 900px; margin-top: 20px;">
-                            <button class="btn btn-primary" style="margin-right:40px" type="button" v-on:click="activeOrder(element.Id)" v-if="element.Status==='Draft'">Activate</button>
-                            <button class="btn btn-danger" style="margin-right:40px" type="button" v-if="element.Status==='Draft'|| element.Status==='Activated'">Cancel</button>
+                            <button class="btn btn-primary" style="margin-right:40px" type="button" v-on:click="activeButton(element.Id)" v-if="element.Status==='Draft'">Activate</button>
+                            <button class="btn btn-danger" style="margin-right:40px" type="button" v-on:click="cancelButton(element.Id)" v-if="element.Status==='Draft'|| element.Status==='Activated'">Cancel</button>
                             <button class="btn btn-success" style="margin-right:40px" type="button" v-if="element.Status==='Delivering'">Complete</button>
-                            <button class="btn btn-secondary" style="margin-right:40px" type="button" v-if="element.Status==='Activated'">Report</button>
+                            <button class="btn btn-secondary" style="margin-right:40px" type="button" v-on:click="reportButton(element.Id)" v-if="element.Status==='Activated'">Report</button>
                         </div>
                     </td>
                 </tr>

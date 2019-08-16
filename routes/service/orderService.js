@@ -6,6 +6,7 @@ const request = require('request');
 var transactionService = require('../../services/transactionService')
 var contractService = require('../../services/contracService');
 var conf = require('../../config/ethereum');
+const {abi, evm} = require('../../services/compile');
 router.get('/api/order/getDetail/:id',function(req,res)
 {
     var ids=[];
@@ -125,5 +126,107 @@ router.post('/api/order/ActiveOrder',function(req,res)
             })
     })
     .catch((err)=>{return res.status(500).json(utils.fail(err,err.message));})
+})
+router.post('/api/order/ContractInfo',function(req,res)
+{
+    transactionService.getOne(req.body.Id)
+    .then((result)=>
+    {
+        console.log(result);
+        var resp ={
+            OrderId: result.orderId,
+            ContractAddress: result.contractAddress,
+            ContractABI:abi
+        };
+        res.json(utils.succeed(resp));
+    })
+    .catch((err)=>
+    {
+        console.log('Error return'+err);
+        return res.status(500).json(utils.fail(err,err.message));  
+    })
+})
+router.post('/api/order/CancelContract',function(req,res)
+{
+    if(req.body.contract != '')
+    {
+        contractService.cancelContract(req.body.contract)
+        .then(result1=>
+        {
+            console.log(result1);
+            if(result1.check==true)
+            {
+                console.log('Cancel')
+                orderService.changeState(req.body.OrderId,'Cancel')
+                .then(resul =>{
+                    console.log('Result');
+                    res.json(utils.succeed(resul));
+                })
+                .catch((err)=>{
+                    console.log('ERROR'+err);
+                    return res.status(500).json(utils.fail(err,err.message));})
+            }
+        })
+        .catch(error=>
+        {
+            console.log('Error return'+error);
+            return res.status(500).json(utils.fail(error,error.message));
+        })
+        
+    }
+    else{
+        transactionService.getOne(req.body.OrderId)
+    .then((result)=>
+    {
+        if(result.contractAddress=='')
+        {
+            orderService.changeState(req.body.OrderId,'Cancel')
+                .then(resul =>{
+                    console.log('Result');
+                    res.json(utils.succeed(resul));
+                })
+                .catch((err)=>{
+                    console.log('ERROR'+err);
+                    return res.status(500).json(utils.fail(err,err.message));})
+        }
+    })
+    .catch((err)=>
+    {
+        console.log('Error return'+err);
+        return res.status(500).json(utils.fail(err,err.message));  
+    })
+
+    }
+
+})
+router.post('/api/order/reportContract',function(req,res)
+{
+    contractService.ReportContract(req.body.contract)
+    .then(result1=>
+    {
+        console.log(result1);
+        if(result1.check==true)
+        {
+            console.log('Cancel')
+            orderService.changeState(req.body.OrderId,'Cancel')
+            .then(resul =>{
+                console.log('Result');
+                res.json(utils.succeed(resul));
+            })
+            .catch((err)=>{
+                console.log('ERROR'+err);
+                return res.status(500).json(utils.fail(err,err.message));})
+        }
+    })
+    .catch(error=>
+    {
+        console.log('Error return'+error);
+        return res.status(500).json(utils.fail(error,error.message));
+    })
+
+})
+router.post('/api/order/deliveryContract',function(req,res)
+{
+    console.log(req.body.OrderId)
 })
 module.exports=router;

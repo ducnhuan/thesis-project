@@ -6,16 +6,13 @@ contract Demo {
     uint256 public deliveryDate;
     address payable private seller;
     address payable private customer;
-    bool customerViolate;
-    bool sellerViolate;
+
     bytes32 state;
     constructor(uint256 _amount,uint256 date) public payable{
         seller = msg.sender;
         deliveryDate = date;
         orderAmount = _amount;
         penaltyAmount = msg.value;
-        customerViolate = false;
-        sellerViolate = false;
         state = "Created";
     }
     event Activate(
@@ -53,14 +50,22 @@ contract Demo {
         state = "Activate";
         emit Activate(true,customer);
     }
-    function getInstructor() public view returns(address, address, uint256,uint256, bytes32,bool,bool){
-        return (seller,customer,orderAmount,penaltyAmount,state,customerViolate,sellerViolate);
+    function getInstructor() public view returns(address, address, uint256,uint256, bytes32){
+        return (seller,customer,orderAmount,penaltyAmount,state);
     }
-    function cancelContract() public
+    function cancelContract() public payable
     {
+        require(msg.sender == customer || msg.sender == seller,"You can not access to this contract");
         require(state!="Delivery","Order in delivery period");
-        if(msg.sender == customer) customerViolate = true;
-        if(msg.sender == seller) sellerViolate = true;
+        if(msg.sender == customer)
+        {
+            customer.transfer(receiveAmount-penaltyAmount);
+            seller.transfer(2*penaltyAmount);
+        }
+        else if(msg.sender == seller)
+        {
+            customer.transfer(receiveAmount+penaltyAmount);
+        }
         state = "Cancel";
         emit Cancel(true,msg.sender);
     }
@@ -70,32 +75,17 @@ contract Demo {
         state = "Delivery";
         emit Delivery(true);
     }
-    function reportContract(uint256 todate) public onlyCustomer
+    function reportContract(uint256 todate) public payable onlyCustomer
     {
         require(todate > deliveryDate,"Order not reach the delivery date");
         require(state!="Delivery","Order is delivered");
-        sellerViolate = true;
+        customer.transfer(receiveAmount+penaltyAmount);
         state = "Report";
         emit Report(true);
     }
-    function complete() public payable{
-        require(state != "Created" && state != "Activate", "Can not cancel contract in that periods.");
-        if(sellerViolate == true)
-        {
-            customer.transfer(receiveAmount+penaltyAmount);
-        }
-        else if(customerViolate == true)
-        {
-            customer.transfer(receiveAmount-penaltyAmount);
-            seller.transfer(2*penaltyAmount);
-        }
-        else
-        {
-            seller.transfer(receiveAmount+penaltyAmount);
-        }
-        receiveAmount = 0;
-        penaltyAmount = 0;
-        orderAmount = 0;
+    function complete() public payable onlyCustomer{
+        require(state == "Delivery", "Can not cancel contract in that periods.");
+        seller.transfer(receiveAmount+penaltyAmount);
         state = "Complete";
         emit Complete(true);
     }
