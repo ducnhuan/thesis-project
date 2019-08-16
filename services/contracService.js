@@ -114,6 +114,30 @@ class contractService
             });
         });
     }
+    static sellerDeliveryContract(address)
+    {
+        //console.log(address);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            web3.eth.getGasPrice(function(err,gasPrice)
+            {
+                if(err){reject(err);}
+                else
+                {
+                    MyContract.methods.deliveryContract().send({from:conf.account1,gasPrice:gasPrice},function(err,result)
+                    {
+                        if(err){reject(err);}
+                        else
+                        {
+                            //console.log(result);
+                            resolve(result);
+                        }
+                    })
+                }
+            })   
+        }) 
+    }
 
 }
 module.exports=contractService;
