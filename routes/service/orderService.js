@@ -227,6 +227,6 @@ router.post('/api/order/reportContract',function(req,res)
 })
 router.post('/api/order/deliveryContract',function(req,res)
 {
-    console.log(req.body)
+    console.log(req.body.OrderId)
 })
 module.exports=router;
