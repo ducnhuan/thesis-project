@@ -114,9 +114,29 @@ class contractService
             });
         });
     }
+    static CompleteContract(address)
+    {
+        console.log(address);
+        const web3 = new Web3(conf.webSocketProvider);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            MyContract.once('Complete', { // Using an array means OR: e.g. 20 or 23
+                fromBlock: 0
+            }, function(error, event)
+            { 
+                if(error){reject(error);}
+                else
+                {
+                    console.log(event);
+                    resolve(event.returnValues);
+                }
+            });
+        });
+    }
     static sellerDeliveryContract(address)
     {
-        //console.log(address);
+        console.log(address);
         var MyContract =  web3.eth.Contract(abi,address);
         return new Promise(function(resolve,reject)
         {
@@ -126,6 +146,30 @@ class contractService
                 else
                 {
                     MyContract.methods.deliveryContract().send({from:conf.account1,gasPrice:gasPrice},function(err,result)
+                    {
+                        if(err){reject(err);}
+                        else
+                        {
+                            //console.log(result);
+                            resolve(result);
+                        }
+                    })
+                }
+            })   
+        }) 
+    }
+    static sellerCancelContract(address)
+    {
+        console.log(address);
+        var MyContract =  web3.eth.Contract(abi,address);
+        return new Promise(function(resolve,reject)
+        {
+            web3.eth.getGasPrice(function(err,gasPrice)
+            {
+                if(err){reject(err);}
+                else
+                {
+                    MyContract.methods.cancelContract().send({from:conf.account1,gasPrice:gasPrice},function(err,result)
                     {
                         if(err){reject(err);}
                         else

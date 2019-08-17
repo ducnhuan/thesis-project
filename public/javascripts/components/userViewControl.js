@@ -116,6 +116,38 @@ var table = new Vue({
                 console.log('Error'+response);
             })
         },
+        completeButton:function(Id)
+        {
+            console.log('Complete');
+            // console.log(Date.now());
+            // console.log(new Date().getTime());
+            // console.log(new Date("2019-08-16").getTime());
+            // var d= new Date();
+            // d.setTime(new Date("2019-08-16").getTime());
+            // console.log(d.toString());
+            this.$http.post('/service/api/order/ContractInfo',{Id:Id})
+            .then(response=>{
+                console.log(response);
+                this.completeTransaction(response.body.data.ContractAddress,response.body.data.ContractABI)
+                .then(()=>{
+                    this.$http.post('/service/api/order/completeContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
+                    .then(response1=>
+                    {
+                        if(response1.body.status=="successful")
+                        {
+                            alert("Your order is completed. Please check your inbox for confirm email. Thank you!!");
+                            this.orderData=[];
+                            this.loadOrderData();
+                        }
+                    },response1=>
+                    {
+                        console.log("Error"+response1);
+                    })
+                })
+            },response=>{
+                console.log('Error'+response);
+            })
+        },
         cancelButton:function(Id)
         {
             console.log('Cancel');
@@ -284,6 +316,30 @@ var table = new Vue({
                     console.log(web3.eth.defaultAccount)
                     var contract = web3.eth.contract(abi).at(contractAddress); 
                     contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gas: 45000 },
+                        (err, res) => { if(err){console.log('Error:'+err);
+                                        console.log(res);}});
+
+                } catch (error) {
+                    console.log('ERRor'+error);
+                }
+            }
+            else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            }
+        },
+        async completeTransaction(contractAddress,abi){
+            console.log('Complete contract');
+            console.log(contractAddress);
+            console.log(abi);
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    console.log(web3.eth.defaultAccount)
+                    var contract = web3.eth.contract(abi).at(contractAddress); 
+                    contract.complete({ from: web3.eth.defaultAccount, gas: 45000 },
                         (err, res) => { if(err){console.log('Error:'+err);
                                         console.log(res);}});
 

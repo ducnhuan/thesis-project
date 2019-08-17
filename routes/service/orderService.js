@@ -199,6 +199,32 @@ router.post('/api/order/CancelContract',function(req,res)
     }
 
 })
+router.post('/api/order/completeContract',function(req,res)
+{
+    contractService.CompleteContract(req.body.contract)
+    .then(result1=>
+    {
+        console.log(result1);
+        if(result1.check==true)
+        {
+            console.log('Complete')
+            orderService.changeState(req.body.OrderId,'Completed')
+            .then(resul =>{
+                console.log('Result');
+                res.json(utils.succeed(resul));
+            })
+            .catch((err)=>{
+                console.log('ERROR'+err);
+                return res.status(500).json(utils.fail(err,err.message));})
+        }
+    })
+    .catch(error=>
+    {
+        console.log('Error return'+error);
+        return res.status(500).json(utils.fail(error,error.message));
+    })
+
+})
 router.post('/api/order/reportContract',function(req,res)
 {
     contractService.ReportContract(req.body.contract)
@@ -207,7 +233,7 @@ router.post('/api/order/reportContract',function(req,res)
         console.log(result1);
         if(result1.check==true)
         {
-            console.log('Cancel')
+            console.log('Report')
             orderService.changeState(req.body.OrderId,'Cancel')
             .then(resul =>{
                 console.log('Result');
@@ -225,17 +251,15 @@ router.post('/api/order/reportContract',function(req,res)
     })
 
 })
-router.post('/api/order/deliveryContract',function(req,res)
+router.post('/api/order/SellerDeliveryContract',function(req,res)
 {
-    console.log(req.header);
-    console.log(req.headers)
     transactionService.getOne(req.body.OrderId)
     .then((result)=>{
-        //console.log(result);
+        console.log(result);
         contractService.sellerDeliveryContract(result.contractAddress)
         .then((result1)=>
         {
-            //console.log(result1);
+            console.log(result1);
             var resp ={
                 OrderId: req.body.OrderId,
                 ContractAddress: result.contractAddress,
@@ -255,5 +279,38 @@ router.post('/api/order/deliveryContract',function(req,res)
         console.log('Error return'+err);
         return res.status(500).json(utils.fail(err,err.message));
     })
+})
+router.post('/api/order/SellerCancelContract',function(req,res)
+{
+    transactionService.getOne(req.body.OrderId)
+    .then((result)=>{
+        console.log(result);
+        contractService.sellerCancelContract(result.contractAddress)
+        .then((result1)=>
+        {
+            console.log(result1);
+            var resp ={
+                OrderId: req.body.OrderId,
+                ContractAddress: result.contractAddress,
+                State:"Successful"
+            };
+            res.json(utils.succeed(resp));
+            
+        })
+        .catch(error=>
+            {
+                console.log('Error return'+error);
+                return res.status(500).json(utils.fail(error,error.message));
+            })
+
+    })
+    .catch(err=>{
+        console.log('Error return'+err);
+        return res.status(500).json(utils.fail(err,err.message));
+    })
+})
+router.post('/api/order/test',function(req,res)
+{
+    console.log(req.body);
 })
 module.exports=router;
