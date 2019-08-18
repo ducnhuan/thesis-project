@@ -39,10 +39,9 @@ class contractService
                             else
                             {
                                 web3.eth.sendSignedTransaction(result.rawTransaction)
-                                .on('transactionHash',function(hash){console.log('Hash'+hash);})
                                 .on('confirmation',function(confirmationNumber, receipt)
                                     {
-                                        console.log('Confirm'+confirmationNumber+receipt.contractAddress);
+                                        //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
                                         resolve(receipt.contractAddress);
                                     })
                                 .on('error',function(err){console.log('Error:'+err);
