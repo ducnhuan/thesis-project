@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Order = require('../models/transaction');
+var User = require('../models/user');
 var jwt = require('jsonwebtoken');
 var conf =require('../config/salesforce')
 /* GET users listing. */
@@ -18,29 +19,36 @@ router.get('/orderDetail', function(req, res, next) {
 });
 router.post('/addOrder',function(req,res,next)
 {
-    var user = jwt.verify(req.session.passport.user.token,conf.secretkey);
+    console.log(req.session.passport.user.email);
+    var email=req.session.passport.user.email;
     var orderId = req.body.id;
-    Order.findOne({orderId:orderId},function(err,doc)
+    User.findOne({email:email},function(err,doc1)
     {
+        console.log(doc1);
         if(err){res.status(500).send('Database Error occured');}
-        else
+        Order.findOne({orderId:orderId},function(err,doc)
         {
-            if(doc){res.status(500).send('Order have already added by another user.');}
+            if(err){res.status(500).send('Database Error occured');}
             else
             {
-                var newRecord = new Order()
-                newRecord.orderId= orderId;
-                newRecord.userId= user.userID;
-                newRecord.save(function(err,order)
+                if(doc){res.status(500).send('Order have already added by another user.');}
+                else
                 {
-                    if(err){res.status(500).send(err);}
-                    else{res.send("Success!!");}
-                })
+                    var newRecord = new Order()
+                    newRecord.orderId= orderId;
+                    newRecord.userId= doc1._id;
+                    newRecord.save(function(err,order)
+                    {
+                        if(err){res.status(500).send(err);}
+                        else{res.send("Success!!");}
+                    })
+                }
             }
-        }
+        })
     })
-    console.log(user);
-    console.log(orderId); 
+    
+    // console.log(user);
+    // console.log(orderId); 
 });
 
 module.exports = router;
