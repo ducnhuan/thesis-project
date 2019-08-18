@@ -24,16 +24,19 @@
                 </div>-->
               <tr v-for="element in orderData">
                 <td colspan="4">
-                  <div style="text-align:left; margin-left: 30px;" class="row">
+                  <div class="progress" v-if="element.Status==='Cancel'">
+                    <div class="progress-bar progress-bar-striped bg-danger"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                  <div class="progress" v-else>
+                    <div class="progress-bar progress-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" :style="'width:'+element.Progress+'%'">
+                    </div>
+                  </div>
+                  <div style="text-align:left; margin-left: 30px;margin-top:20px;" class="row">
                     <p style="margin-right:40px" >Order Id: {{element.Id}}</p>
                     <p style="margin-right:40px">Total Amount : ${{element.Total}}</p>
                     <p style="margin-right:40px">Start Date : {{element.EffectiveDate}}</p>
                     <button type="button" class="btn btn-info btn-sm" data-toggle="collapse" data-target="#multiCollapseExample1" aria-expanded="false" aria-controls="multiCollapseExample1" style="margin-left: 400px; margin-bottom: 10px;margin-right:40px;">Order Products</button>
                     <button type="button" class="btn btn-warning btn-sm" style="margin-bottom: 10px;" v-on:click="addOrder(element.Id)">Add to my order</button>
-                  </div>
-                  <div class="progress progress-striped active">
-                    <div class="progress-bar"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" :style="'width:'+element.Progress+'%'">
-                    </div>
                   </div>
                   <div class="collapse multi-collapse" id="multiCollapseExample1">
                       <table class="table table-hover table-striped ">
