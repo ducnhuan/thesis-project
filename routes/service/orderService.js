@@ -86,14 +86,18 @@ router.post('/api/order/ConfirmOrder',function(req,res)
     transactionService.getOne(req.body.Id)
     .then(result=>{
         console.log(result)
-        contractService.deployContract(result.Total*1000000000000000000,conf.percent,result.DeliveryDate)
-        .then((result1)=>{
-            transactionService.updateAddress(req.body.Id,result1);
-            res.json(utils.succeed(result1));
-            })
-        .catch((err)=>{
-            return res.status(500).json(utils.fail(err,err.message));
-            })    
+        if(result.contractAddress=='')
+        {
+            contractService.deployContract(result.Total*1000000000000000000,conf.percent,result.DeliveryDate)
+            .then((result1)=>{
+                transactionService.updateAddress(req.body.Id,result1);
+                res.json(utils.succeed(result1));
+                })
+            .catch((err)=>{
+                return res.status(500).json(utils.fail(err,err.message));
+                })
+        }
+        else{res.json(utils.succeed(result.contractAddress));}    
     })
     .catch((err)=>{return res.status(500).json(utils.fail(err,err.message));})
 })

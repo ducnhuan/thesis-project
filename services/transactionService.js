@@ -20,7 +20,7 @@ class transactionService
         console.log(date+duration);
         var date1 = new Date(date);
         date1.setDate(date1.getDate()+duration);
-        return Order.updateOne({orderId:id},{Total: total,DeliveryDate:date1.getTime()}).exec();
+        return Order.updateOne({orderId:id},{Total: total,DeliveryDate:date1.getTime(),contractAddress:''}).exec();
     }
     static updateAddress(id,address)
     {

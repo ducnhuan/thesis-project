@@ -213,6 +213,10 @@ var table = new Vue({
                 },response=>
                 {
                      console.log(response);
+                     if(response.status==503 && response.statusText=='Service Unavailable')
+                     {
+                        setTimeout(function(){this.loadOrderData()}.bind(this),30000);
+                    }
                 });
         },
         activeButton:function(id)
