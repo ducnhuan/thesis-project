@@ -201,6 +201,7 @@ router.post('/api/order/CancelContract',function(req,res)
 })
 router.post('/api/order/completeContract',function(req,res)
 {
+    console.log('Complete'+req.body.contract);
     contractService.CompleteContract(req.body.contract)
     .then(result1=>
     {
@@ -210,7 +211,7 @@ router.post('/api/order/completeContract',function(req,res)
             console.log('Complete')
             orderService.changeState(req.body.OrderId,'Completed')
             .then(resul =>{
-                console.log('Result');
+                console.log('Result'+resul);
                 res.json(utils.succeed(resul));
             })
             .catch((err)=>{

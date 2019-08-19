@@ -133,6 +133,7 @@ var table = new Vue({
                     this.$http.post('/service/api/order/completeContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
                     .then(response1=>
                     {
+                        console.log(response1);
                         if(response1.body.status=="successful")
                         {
                             alert("Your order is completed. Please check your inbox for confirm email. Thank you!!");

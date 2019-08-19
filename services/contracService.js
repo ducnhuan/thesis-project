@@ -136,7 +136,7 @@ class contractService
     static sellerDeliveryContract(address)
     {
         console.log(address);
-        var MyContract =  web3.eth.Contract(abi,address);
+        var MyContract =  web3.eth.Contract(abi);
         return new Promise(function(resolve,reject)
         {
             web3.eth.getGasPrice(function(err,gasPrice)
@@ -144,13 +144,36 @@ class contractService
                 if(err){reject(err);}
                 else
                 {
-                    MyContract.methods.deliveryContract().send({from:conf.account1,gasPrice:gasPrice},function(err,result)
+                    web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
                     {
                         if(err){reject(err);}
                         else
                         {
-                            //console.log(result);
-                            resolve(result);
+                            var data=MyContract.methods.deliveryContract().encodeABI();
+                            web3.eth.accounts.signTransaction({
+                                gas:60000,
+                                from:conf.account1,
+                                to:address,
+                                gasPrice:gasPrice,
+                                nonce:txCount,
+                                data:data,
+                                chainId:3
+                            },conf.privateKey1,
+                            (err,result)=>
+                            {
+                                if(err){reject(err);}
+                                else
+                                {
+                                    web3.eth.sendSignedTransaction(result.rawTransaction)
+                                    .on('confirmation',function(confirmationNumber, receipt)
+                                        {
+                                            //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
+                                            resolve(receipt.contractAddress);
+                                        })
+                                    .on('error',function(err){console.log('Error:'+err);
+                                                              reject(err);})
+                                }
+                            })
                         }
                     })
                 }
@@ -160,7 +183,7 @@ class contractService
     static sellerCancelContract(address)
     {
         console.log(address);
-        var MyContract =  web3.eth.Contract(abi,address);
+        var MyContract =  web3.eth.Contract(abi);
         return new Promise(function(resolve,reject)
         {
             web3.eth.getGasPrice(function(err,gasPrice)
@@ -168,13 +191,36 @@ class contractService
                 if(err){reject(err);}
                 else
                 {
-                    MyContract.methods.cancelContract().send({from:conf.account1,gasPrice:gasPrice},function(err,result)
+                    web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
                     {
                         if(err){reject(err);}
                         else
                         {
-                            //console.log(result);
-                            resolve(result);
+                            var data=MyContract.methods.cancelContract().encodeABI();
+                            web3.eth.accounts.signTransaction({
+                                gas:60000,
+                                from:conf.account1,
+                                to:address,
+                                gasPrice:gasPrice,
+                                nonce:txCount,
+                                data:data,
+                                chainId:3
+                            },conf.privateKey1,
+                            (err,result)=>
+                            {
+                                if(err){reject(err);}
+                                else
+                                {
+                                    web3.eth.sendSignedTransaction(result.rawTransaction)
+                                    .on('confirmation',function(confirmationNumber, receipt)
+                                        {
+                                            //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
+                                            resolve(receipt.contractAddress);
+                                        })
+                                    .on('error',function(err){console.log('Error:'+err);
+                                                              reject(err);})
+                                }
+                            })
                         }
                     })
                 }
