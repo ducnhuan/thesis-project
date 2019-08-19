@@ -87,17 +87,12 @@ var table = new Vue({
         reportButton:function(Id)
         {
             console.log('Report');
-            // console.log(Date.now());
-            // console.log(new Date().getTime());
-            // console.log(new Date("2019-08-16").getTime());
-            // var d= new Date();
-            // d.setTime(new Date("2019-08-16").getTime());
-            // console.log(d.toString());
             this.$http.post('/service/api/order/ContractInfo',{Id:Id})
             .then(response=>{
                 console.log(response);
-                this.reportTransaction(response.body.data.ContractAddress,response.body.data.ContractABI,Date.now())
+                this.reportTransaction(response.body.data.ContractAddress,response.body.data.ContractABI,Date().now())
                 .then(()=>{
+                    console.log('After sending');
                     this.$http.post('/service/api/order/reportContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
                     .then(response1=>
                     {
@@ -112,6 +107,7 @@ var table = new Vue({
                         console.log("Error"+response1);
                     })
                 })
+                .catch((err)=>{console.log('Error'+err);})
             },response=>{
                 console.log('Error'+response);
             })
@@ -119,17 +115,12 @@ var table = new Vue({
         completeButton:function(Id)
         {
             console.log('Complete');
-            // console.log(Date.now());
-            // console.log(new Date().getTime());
-            // console.log(new Date("2019-08-16").getTime());
-            // var d= new Date();
-            // d.setTime(new Date("2019-08-16").getTime());
-            // console.log(d.toString());
             this.$http.post('/service/api/order/ContractInfo',{Id:Id})
             .then(response=>{
                 console.log(response);
                 this.completeTransaction(response.body.data.ContractAddress,response.body.data.ContractABI)
                 .then(()=>{
+                    console.log('after sending');
                     this.$http.post('/service/api/order/completeContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
                     .then(response1=>
                     {
@@ -145,6 +136,7 @@ var table = new Vue({
                         console.log("Error"+response1);
                     })
                 })
+                .catch((err)=>{console.log('Error'+err);})
             },response=>{
                 console.log('Error'+response);
             })
@@ -159,6 +151,7 @@ var table = new Vue({
                     {
                         this.cancelTransaction(response.body.data.ContractAddress,response.body.data.ContractABI)
                         .then(()=>{
+                            console.log('After sending');
                             this.$http.post('/service/api/order/CancelContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
                             .then(response1=>
                                 {
@@ -173,6 +166,7 @@ var table = new Vue({
                                     console.log("Error"+response1);
                                 })
                         })
+                        .catch((err)=>{console.log('Error'+err);})
                     }
                     else 
                     {
@@ -209,12 +203,16 @@ var table = new Vue({
                 {
                     console.log(response.body.data+this.element.Total);
                     this.sendTransaction(response.body.data,this.element.Total)
-                    .then(()=>{console.log('111111111Runfin');
-                               this.confirmContract(response.body.data);
-                                });
+                    .then(()=>
+                    {
+                        console.log('After sending');
+                        //console.log(result);
+                        this.confirmContract(response.body.data);
+                    })
+                    .catch((err)=>{console.log('Error'+err);});
                 },response=>
                 {
-                    console.log(response);
+                     console.log(response);
                 });
         },
         activeButton:function(id)
@@ -235,7 +233,7 @@ var table = new Vue({
             
             response=>{console.log('ERROR'+response);})
         },
-        async sendTransaction(contractAddress,total){
+        async sendTransaction(contractAddress,total){//contractAddress,total){
             console.log('Load')
             if (window.ethereum) {
                 window.web3 = new Web3(ethereum);
@@ -244,34 +242,30 @@ var table = new Vue({
                     await ethereum.enable();
                     // Acccounts now exposed
                     console.log(web3.eth.defaultAccount)
-                    web3.eth.getGasPrice(function(err,gasPrice)
-                    {
-                        if(err){console.log(err);}
-                        else
-                        {
-                            console.log(gasPrice);
-                        }
-                    })
-                    web3.eth.getTransactionCount(web3.eth.defaultAccount,'pending', (err, txCount) => {
-                        // Build the transaction
-                        console.log(txCount);
-                        web3.eth.sendTransaction({
-                            from:web3.eth.defaultAccount,
-                            to: contractAddress,
-                            value:total*1000000000000000000,
-                            gas: 100000,
-                            gasPrice:20000000000,
-                            nonce: txCount,
-                            chainId: 4777
-                        },function(err, transactionHash)
-                        {
-                            if(!err)
+                   return new Promise(function(resolve,reject)
+                   {
+                        web3.eth.getTransactionCount(web3.eth.defaultAccount,'pending',(err, txCount) => {
+                            // Build the transaction
+                            console.log(txCount);
+                            web3.eth.sendTransaction({
+                                from:web3.eth.defaultAccount,
+                                to: contractAddress,//contractAddress,
+                                value:total*1000000000000000000,
+                                gas: 100000,
+                                gasPrice:20000000000,
+                                nonce: txCount,
+                                chainId: 3
+                            },function(err,transactionHash)
                             {
-                                console.log(transactionHash);
-                                console.log(contractAddress);
-                            }
+                                if(err){reject(err);}
+                                else
+                                {
+                                    console.log(transactionHash);
+                                    resolve(transactionHash);
+                                }
+                            });
                         });
-                    });
+                    }) 
                 } catch (error) {
                     console.log(error);
                 }
@@ -291,11 +285,23 @@ var table = new Vue({
                     await ethereum.enable();
                     // Acccounts now exposed
                     console.log(web3.eth.defaultAccount)
-                    var contract = web3.eth.contract(abi).at(contractAddress); 
-                    contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000 },
-                        (err, res) => { if(err){console.log('Error:'+err);
-                                        console.log(res);}});
-
+                    var contract = web3.eth.contract(abi).at(contractAddress);
+                    return new Promise(function(resolve,reject)
+                    {
+                        contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000 },
+                            (err, res) => { 
+                                if(err)
+                                {
+                                    console.log('Error:'+err);
+                                    reject(err);
+                                }
+                                else
+                                {
+                                    console.log(res);
+                                    resolve(res);
+                                }});
+    
+                    })                    
                 } catch (error) {
                     console.log('ERRor'+error);
                 }
@@ -316,10 +322,21 @@ var table = new Vue({
                     // Acccounts now exposed
                     console.log(web3.eth.defaultAccount)
                     var contract = web3.eth.contract(abi).at(contractAddress); 
-                    contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gas: 45000 },
-                        (err, res) => { if(err){console.log('Error:'+err);
-                                        console.log(res);}});
-
+                    return new Promise(function(resolve,reject)
+                    {
+                        contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gas: 45000 },
+                            (err, res) => { 
+                                if(err)
+                                {
+                                    console.log('Error:'+err);
+                                    reject(err);
+                                }
+                                else
+                                {
+                                    console.log(res);
+                                    resolve(res);
+                                }});
+                    })
                 } catch (error) {
                     console.log('ERRor'+error);
                 }
@@ -340,11 +357,23 @@ var table = new Vue({
                     // Acccounts now exposed
                     console.log(web3.eth.defaultAccount)
                     var contract = web3.eth.contract(abi).at(contractAddress); 
-                    contract.complete({ from: web3.eth.defaultAccount, gas: 45000 },
-                        (err, res) => { if(err){console.log('Error:'+err);
-                                        console.log(res);}});
-
-                } catch (error) {
+                    return new Promise(function(resolve,reject)
+                    {
+                        contract.complete({ from: web3.eth.defaultAccount, gas: 45000 },
+                            (err, res) => { 
+                                if(err)
+                                {
+                                    console.log('Error:'+err);
+                                    reject(err);
+                                }
+                                else 
+                                {
+                                    console.log(res);
+                                    resolve(res);
+                                }});
+                    })
+                } 
+                catch (error) {
                     console.log('ERRor'+error);
                 }
             }

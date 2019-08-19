@@ -24,10 +24,11 @@ class contractService
                     if(err){reject(err);}
                     else
                     {
+                        console.log(gasPrice);
                         web3.eth.accounts.signTransaction({
                             from:conf.account1,
                             gas: 1200000,
-                            gasPrice:gasPrice,
+                            gasPrice:gasPrice*2,
                             nonce:txCount,
                             data:contractData,
                             value:web3.utils.toHex(total*percent/100),
@@ -127,7 +128,7 @@ class contractService
                 if(error){reject(error);}
                 else
                 {
-                    console.log(event);
+                    //console.log(event);
                     resolve(event.returnValues);
                 }
             });
@@ -154,7 +155,7 @@ class contractService
                                 gas:60000,
                                 from:conf.account1,
                                 to:address,
-                                gasPrice:gasPrice,
+                                gasPrice:gasPrice*2,
                                 nonce:txCount,
                                 data:data,
                                 chainId:3
@@ -201,7 +202,7 @@ class contractService
                                 gas:60000,
                                 from:conf.account1,
                                 to:address,
-                                gasPrice:gasPrice,
+                                gasPrice:gasPrice*2,
                                 nonce:txCount,
                                 data:data,
                                 chainId:3

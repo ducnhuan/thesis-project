@@ -313,5 +313,13 @@ router.post('/api/order/SellerCancelContract',function(req,res)
 router.post('/api/order/test',function(req,res)
 {
     console.log(req.body);
+    orderService.changeState(req.body.OrderId,'Completed')
+    .then(resul =>{
+        console.log('Result'+resul);
+        res.json(utils.succeed(resul));
+    })
+    .catch((err)=>{
+        console.log('ERROR'+err);
+        return res.status(500).json(utils.fail(err,err.message));})
 })
 module.exports=router;
