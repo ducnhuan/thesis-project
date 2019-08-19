@@ -90,7 +90,7 @@ var table = new Vue({
             this.$http.post('/service/api/order/ContractInfo',{Id:Id})
             .then(response=>{
                 console.log(response);
-                this.reportTransaction(response.body.data.ContractAddress,response.body.data.ContractABI,Date().now())
+                this.reportTransaction(response.body.data.ContractAddress,response.body.data.ContractABI,Date.now())
                 .then(()=>{
                     console.log('After sending');
                     this.$http.post('/service/api/order/reportContract',{OrderId:response.body.data.OrderId,contract:response.body.data.ContractAddress})
