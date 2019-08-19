@@ -99,7 +99,6 @@ router.post('/api/order/ConfirmOrder',function(req,res)
 })
 router.post('/api/order/ActiveOrder',function(req,res)
 {
-    console.log(req.body);
     transactionService.getbyAddress(req.body.Address)
     .then(result=>{
         console.log(result);
