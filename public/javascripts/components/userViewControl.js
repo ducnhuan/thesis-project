@@ -215,10 +215,10 @@ var table = new Vue({
                      console.log(response);
                      if(response.status==503 && response.statusText=='Service Unavailable')
                      {
-                        console.log('Waitting 20s...');
+                        console.log('Waitting 50s...');
                         setTimeout(function(){
                             console.log('20');
-                            this.confirmOrder()}.bind(this),20000);
+                            this.confirmOrder()}.bind(this),50000);
                     }
                 });
         },
