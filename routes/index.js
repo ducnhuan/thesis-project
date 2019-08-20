@@ -34,22 +34,14 @@ router.get('/logout', function (req, res) {
 router.get('/redirect',authenticated,function(req,res,next){
   console.log(req.session);
   res.render('index', { title: 'Express' });
-  //console.log(req.session.passport.user.rule=="admin");
-//   if(req.session.passport.user.rule=="admin"){
-//       // console.log("admin");
-//       res.cookie('usrName',req.session.passport.user.username); 
-//       res.cookie('avatar',req.session.passport.user.avatar);
-//       res.cookie('token',req.session.passport.user.token)
-//       res.send({rule:req.session.passport.user.rule});
-//   }else{
-//   // console.log("user")
-//  // var avatar=loadAvatar(req.session.passport.user.username);
-//   // console.log(req.session.passport.user.avatar)
-//       res.cookie('usrName',req.session.passport.user.username); 
-//       res.cookie('avatar',req.session.passport.user.avatar);
-//       res.cookie('token',req.session.passport.user.token)
-//       res.send({rule:req.session.passport.user.rule});
-//   }
+});
+router.get('/resetPassword',function(req,res,next){
+  console.log(req.session);
+  res.render('auth/resetPassword', { title: 'Reset Password' });
+});
+router.get('/setPassword',function(req,res,next){
+  console.log(req.session);
+  res.render('auth/setNewPass', { title: 'Reset Password' });
 });
 
 module.exports = router;

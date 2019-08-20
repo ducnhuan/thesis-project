@@ -22,7 +22,7 @@ class contractService
                     web3.eth.accounts.signTransaction({
                         from:conf.account1,
                         gas: 1500000,
-                        gasPrice:15000000000,
+                        gasPrice:5000000000,
                         nonce:txCount,
                         data:contractData,
                         value:web3.utils.toHex(total*percent/100),

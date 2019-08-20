@@ -1,0 +1,12 @@
+<%layout('./partials/layout')%>
+<body class="bg-white text-center">
+    <div class="form-signin" id="vue-reset">
+        <h1 class="brand">Auto Payment</h1>
+        <input type="password" placeholder="New Password" name="newPass" v-model="newPass" class="form-control" required autofocus>
+        <input type="password" placeholder="Confirm Password" name="confirmPass" v-model="confirmPass" class="form-control" required autofocus>
+        <button class="btn btn-lg btn-block btn-black" @click="submitPassword" >Reset Password</button>
+        
+        <p class="mt-5 mb-3 text-muted">©VGU 2019</p>
+    </div>
+</body>
+<script src="/javascripts/components/resetPasswordControl.js"></script>
