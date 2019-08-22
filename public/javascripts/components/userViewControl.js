@@ -215,10 +215,10 @@ var table = new Vue({
                      console.log(response);
                      if(response.status==503 && response.statusText=='Service Unavailable')
                      {
-                        console.log('Waitting 20s...');
+                        console.log('Waitting 30s...');
                         setTimeout(function(){
-                            console.log('20');
-                            this.confirmOrder()}.bind(this),20000);
+                            console.log('30');
+                            this.confirmOrder()}.bind(this),30000);
                     }
                 });
         },
@@ -259,7 +259,7 @@ var table = new Vue({
                                 to: contractAddress,//contractAddress,
                                 value:total*1000000000000000000,
                                 gas: 100000,
-                                gasPrice:20000000000,
+                                gasPrice:23000000000,
                                 nonce: txCount,
                                 chainId: 3
                             },function(err,transactionHash)
@@ -295,7 +295,7 @@ var table = new Vue({
                     var contract = web3.eth.contract(abi).at(contractAddress);
                     return new Promise(function(resolve,reject)
                     {
-                        contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000 },
+                        contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000, gasPrice:20000000000 },
                             (err, res) => { 
                                 if(err)
                                 {
@@ -331,7 +331,7 @@ var table = new Vue({
                     var contract = web3.eth.contract(abi).at(contractAddress); 
                     return new Promise(function(resolve,reject)
                     {
-                        contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gas: 45000 },
+                        contract.reportContract(timeStamp,{ from: web3.eth.defaultAccount, gasPrice:20000000000 },
                             (err, res) => { 
                                 if(err)
                                 {
@@ -366,7 +366,7 @@ var table = new Vue({
                     var contract = web3.eth.contract(abi).at(contractAddress); 
                     return new Promise(function(resolve,reject)
                     {
-                        contract.complete({ from: web3.eth.defaultAccount, gas: 45000 },
+                        contract.complete({ from: web3.eth.defaultAccount, gasPrice:20000000000 },
                             (err, res) => { 
                                 if(err)
                                 {

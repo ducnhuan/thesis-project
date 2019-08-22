@@ -21,8 +21,8 @@ class contractService
                 {
                     web3.eth.accounts.signTransaction({
                         from:conf.account1,
-                        gas: 1500000,
-                        gasPrice:5000000000,
+                        gas: 1200000,
+                        gasPrice:22000000000,
                         nonce:txCount,
                         data:contractData,
                         value:web3.utils.toHex(total*percent/100),
@@ -132,45 +132,39 @@ class contractService
         var MyContract =  web3.eth.Contract(abi);
         return new Promise(function(resolve,reject)
         {
-            web3.eth.getGasPrice(function(err,gasPrice)
+            web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
             {
                 if(err){reject(err);}
                 else
                 {
-                    web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
+                    var data=MyContract.methods.deliveryContract().encodeABI();
+                    web3.eth.accounts.signTransaction({
+                    gas:60000,
+                    from:conf.account1,
+                    to:address,
+                    gasPrice:20000000000,
+                    nonce:txCount,
+                    data:data,
+                    chainId:3
+                    },conf.privateKey1,
+                    (err,result)=>
                     {
                         if(err){reject(err);}
                         else
                         {
-                            var data=MyContract.methods.deliveryContract().encodeABI();
-                            web3.eth.accounts.signTransaction({
-                                gas:60000,
-                                from:conf.account1,
-                                to:address,
-                                gasPrice:gasPrice*2,
-                                nonce:txCount,
-                                data:data,
-                                chainId:3
-                            },conf.privateKey1,
-                            (err,result)=>
+                            web3.eth.sendSignedTransaction(result.rawTransaction)
+                            .on('confirmation',function(confirmationNumber, receipt)
                             {
-                                if(err){reject(err);}
-                                else
-                                {
-                                    web3.eth.sendSignedTransaction(result.rawTransaction)
-                                    .on('confirmation',function(confirmationNumber, receipt)
-                                        {
-                                            //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
-                                            resolve(receipt.contractAddress);
-                                        })
-                                    .on('error',function(err){console.log('Error:'+err);
-                                                              reject(err);})
-                                }
+                                //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
+                                resolve(confirmationNumber);
                             })
+                            .on('error',function(err){console.log('Error:'+err);
+                                              reject(err);})
                         }
                     })
                 }
-            })   
+            })
+                   
         }) 
     }
     static sellerCancelContract(address)
@@ -178,46 +172,39 @@ class contractService
         console.log(address);
         var MyContract =  web3.eth.Contract(abi);
         return new Promise(function(resolve,reject)
-        {
-            web3.eth.getGasPrice(function(err,gasPrice)
+        {      
+            web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
             {
                 if(err){reject(err);}
                 else
                 {
-                    web3.eth.getTransactionCount(conf.account1,'pending',(err,txCount)=>
+                    var data=MyContract.methods.cancelContract().encodeABI();
+                    web3.eth.accounts.signTransaction({
+                    gas:60000,
+                    from:conf.account1,
+                    to:address,
+                    gasPrice:20000000000,
+                    nonce:txCount,
+                    data:data,
+                    chainId:3
+                },conf.privateKey1,
+                    (err,result)=>
                     {
                         if(err){reject(err);}
                         else
                         {
-                            var data=MyContract.methods.cancelContract().encodeABI();
-                            web3.eth.accounts.signTransaction({
-                                gas:60000,
-                                from:conf.account1,
-                                to:address,
-                                gasPrice:gasPrice*2,
-                                nonce:txCount,
-                                data:data,
-                                chainId:3
-                            },conf.privateKey1,
-                            (err,result)=>
+                            web3.eth.sendSignedTransaction(result.rawTransaction)
+                            .on('confirmation',function(confirmationNumber, receipt)
                             {
-                                if(err){reject(err);}
-                                else
-                                {
-                                    web3.eth.sendSignedTransaction(result.rawTransaction)
-                                    .on('confirmation',function(confirmationNumber, receipt)
-                                        {
-                                            //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
-                                            resolve(receipt.contractAddress);
-                                        })
-                                    .on('error',function(err){console.log('Error:'+err);
-                                                              reject(err);})
-                                }
+                                //console.log('Confirm'+confirmationNumber+receipt.contractAddress);
+                                resolve(confirmationNumber);
                             })
+                            .on('error',function(err){console.log('Error:'+err);
+                                            reject(err);})
                         }
                     })
                 }
-            })   
+            })
         }) 
     }
 
