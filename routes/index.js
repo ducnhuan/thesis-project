@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 router.get('/test',function(req,res,next){
-
+  res.render('test', { title: 'Express' });
 })
 var authenticated = function (req, res, next) {
   if (req.isAuthenticated()) {
