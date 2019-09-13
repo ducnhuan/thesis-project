@@ -5,7 +5,7 @@ window.onload = function()
 function test()
 {
     console.log('Work');
-    var temp =location.origin;
+    var HOST =location.origin;
     console.log(HOST);
     var ws = new WebSocket('ws://localhost:8080');
     ws.onmessage = function(event)
