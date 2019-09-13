@@ -5,9 +5,9 @@ window.onload = function()
 function test()
 {
     console.log('Work');
-    var HOST =location.origin;
+    var HOST =location.origin.replace(/^http/,'ws');
     console.log(HOST);
-    var ws = new WebSocket('wss://salesforce-payment.herokuapp.com:8080');
+    var ws = new WebSocket(HOST);
     ws.onmessage = function(event)
     {
         console.log(event.data);

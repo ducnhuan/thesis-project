@@ -7,6 +7,7 @@ const ejsmate = require('ejs-mate');
 const passport = require('passport');
 const session = require('express-session');
 const service = require('./routes/service')
+var http= require('http');
 var WebSocket = require('ws').Server;
 require('./passport/passport')(passport); 
 
@@ -59,8 +60,11 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-//const PORT = process.env.PORT || 3000;
- wss = new WebSocket({port:8080});
+const PORT = process.env.PORT || 3000;
+var server = http.createServer(app).listen(PORT,function(){
+	console.log("App running on port "+ PORT);
+});
+ wss = new WebSocket({server:server});
  wss.on('connection', (ws) => {
     console.log('Client connected');
     ws.on('close', () => console.log('Client disconnected'));
