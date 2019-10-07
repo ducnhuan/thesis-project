@@ -200,16 +200,10 @@ var table = new Vue({
             console.log(this.element.Id);
             this.$http.post('/service/api/order/ConfirmOrder',{Id:this.element.Id})
             .then(response=>
-                {
+                {   console.log(response)
+                    console.log(response.body.data.url);
                     console.log(response.body.data+this.element.Total);
-                    this.sendTransaction(response.body.data,this.element.Total)
-                    .then(()=>
-                    {
-                        console.log('After sending');
-                        //console.log(result);
-                        this.confirmContract(response.body.data);
-                    })
-                    .catch((err)=>{console.log('Error'+err);});
+                    this.sendEther(response.body.data.url,response.body.data.id);
                 },response=>
                 {
                      console.log(response);
@@ -221,6 +215,34 @@ var table = new Vue({
                             this.confirmOrder()}.bind(this),30000);
                     }
                 });
+        },
+        sendEther:function(URL,Id)
+        {
+            var wss = new WebSocket(URL);
+            var message = {id:Id};
+            wss.onopen=function(){
+                console.log('Connection');
+                wss.send(JSON.stringify(message));
+            };
+            wss.onmessage =(event)=>
+            {
+                let res = JSON.parse(event.data);
+                if(res.status=="failed")
+                {
+                    alert(res.message);
+                }
+                else 
+                {
+                    console.log(res.data);
+                    this.sendTransaction(res.data.contractAddress,res.data.total)
+                    .then(()=>{
+                        console.log('After sending');
+                        this.confirmContract(res.data.contractAddress);
+                    })
+                    .catch((err)=>{console.log('Error'+err);});
+                }
+            }
+
         },
         activeButton:function(id)
         {

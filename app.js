@@ -10,7 +10,7 @@ const service = require('./routes/service')
 var http= require('http');
 var WebSocket = require('ws').Server;
 require('./passport/passport')(passport); 
-
+var idsarray=[];
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth')(passport);
@@ -64,14 +64,31 @@ const PORT = process.env.PORT || 3000;
 var server = http.createServer(app).listen(PORT,function(){
 	console.log("App running on port "+ PORT);
 });
- wss = new WebSocket({server:server});
- wss.on('connection', (ws) => {
-    console.log('Client connected');
-    ws.on('close', () => console.log('Client disconnected'));
- });
- setInterval(() => {
-    wss.clients.forEach((client) => {
-      client.send(new Date().toTimeString());
-    });
- }, 1000);
+var  wss = new WebSocket({server:server});
+app.set('wss',wss);
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+  ws.on('message',(data) =>{
+      var message = JSON.parse(data);
+      if(idsarray.includes(message.id))
+          {
+              let response = {status:'failed',message:'This order is on payment process'};
+              ws.send(JSON.stringify(response));
+              ws.close();
+          }
+      else
+      {
+          ws.id=message.id;
+          idsarray.push(message.id);
+      }
+  })
+  ws.on('close', () => {
+    console.log(idsarray);
+    console.log(ws.id);
+    var index=idsarray.findIndex(ws.id);
+    console.log('Index:'+index);
+    idsarray.splice(index,1);
+    console.log(idsarray);
+    console.log('Client disconnected');});
+});
 module.exports = app;

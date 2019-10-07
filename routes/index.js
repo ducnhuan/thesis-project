@@ -9,6 +9,16 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 router.get('/test',function(req,res,next){
+  let wss = req.app.get('wss');
+  wss.on('connection', (ws) => {
+    console.log('Client connected');
+    ws.on('close', () => console.log('Client disconnected'));
+ });
+ setInterval(() => {
+    wss.clients.forEach((client) => {
+      client.send(new Date().toTimeString());
+    });
+ }, 1000);
   res.render('test', { title: 'Express' });
 })
 var authenticated = function (req, res, next) {

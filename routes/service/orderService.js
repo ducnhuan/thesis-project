@@ -65,13 +65,7 @@ router.get('/api/order/getInfo/:id',function(req,res)
 })
 router.post('/api/order/changeState',function(req,res)
 {
-    //var ids=[];
-    //ids.push(req.params.id);
     console.log(req.body)
-    //var ids=['8012v000001PcWVAA0','8012v000001PdSrAAK'];
-    //console.log(req.body.ids===ids)
-    //console.log('1');
-    // //console.log(id);
     orderService.changeState(req.body.Id,req.body.State)
       .then(result =>{
           console.log('Result');
@@ -81,25 +75,40 @@ router.post('/api/order/changeState',function(req,res)
           console.log('ERROR'+err);
           return res.status(500).json(utils.fail(err,err.message));})
 })
+
 router.post('/api/order/ConfirmOrder',function(req,res)
-{
+{   
+    let wss = req.app.get('wss');
     transactionService.getOne(req.body.Id)
     .then(result=>{
-        console.log(result)
-        if(result.contractAddress=='')
-        {
-            contractService.deployContract(result.Total*1000000000000000000,conf.percent,result.DeliveryDate)
-            .then((result1)=>{
-                transactionService.updateAddress(req.body.Id,result1);
-                res.json(utils.succeed(result1));
-                })
-            .catch((err)=>{
-                return res.status(500).json(utils.fail(err,err.message));
-                })
-        }
-        else{res.json(utils.succeed(result.contractAddress));}    
+        console.log(result);
+        let data= {url:'ws://'+req.get('host'), id:req.body.Id};
+        res.json(utils.succeed(data));
+        contractService.deployContract(result.Total*1000000000000000000,conf.percent,result.DeliveryDate)
+        .then((result1)=>{
+            transactionService.updateAddress(req.body.Id,result1);
+            wss.clients.forEach(ws=>{
+                console.log(ws.id);
+                if(ws.id==result.orderId)
+                {
+                    ws.send(JSON.stringify({status:'successful',data:{contractAddress:result1,total:result.Total}}));
+                    ws.close();
+                }
+            })
+        })
+        .catch((err)=>{
+            wss.clients.forEach(ws=>{
+                console.log(ws.id);
+                if(ws.id==result.orderId)
+                {
+                    ws.send(JSON.stringify({status:'failed',message:err.message}));
+                    ws.close();
+                }
+            })
+        })   
     })
     .catch((err)=>{return res.status(500).json(utils.fail(err,err.message));})
+    
 })
 router.post('/api/order/ActiveOrder',function(req,res)
 {

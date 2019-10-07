@@ -25,7 +25,7 @@ class contractService
                         gasPrice:22000000000,
                         nonce:txCount,
                         data:contractData,
-                        value:web3.utils.toHex(total*percent/100),
+                        value:web3.utils.toHex(total*percent/10000),
                         chainId:3
                     },conf.privateKey1,
                     (err,result)=>
