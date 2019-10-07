@@ -82,7 +82,7 @@ router.post('/api/order/ConfirmOrder',function(req,res)
     transactionService.getOne(req.body.Id)
     .then(result=>{
         console.log(result);
-        let data= {url:'ws://'+req.get('host'), id:req.body.Id};
+        let data= {url:'wss://'+req.get('host'), id:req.body.Id};
         res.json(utils.succeed(data));
         contractService.deployContract(result.Total*1000000000000000000,conf.percent,result.DeliveryDate)
         .then((result1)=>{
