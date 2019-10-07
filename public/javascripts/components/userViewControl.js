@@ -317,7 +317,7 @@ var table = new Vue({
                     var contract = web3.eth.contract(abi).at(contractAddress);
                     return new Promise(function(resolve,reject)
                     {
-                        contract.cancelContract({ from: web3.eth.defaultAccount, gas: 45000, gasPrice:20000000000 },
+                        contract.cancelContract({ from: web3.eth.defaultAccount, gasPrice:20000000000 },
                             (err, res) => { 
                                 if(err)
                                 {
