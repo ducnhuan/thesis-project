@@ -207,13 +207,6 @@ var table = new Vue({
                 },response=>
                 {
                      console.log(response);
-                     if(response.status==503 && response.statusText=='Service Unavailable')
-                     {
-                        console.log('Waitting 30s ...');
-                        setTimeout(function(){
-                            console.log('30');
-                            this.confirmOrder()}.bind(this),30000);
-                    }
                 });
         },
         sendEther:function(URL,Id)
